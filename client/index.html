@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Chat</title>
+  <link rel="stylesheet" href="./style.css"> 
+
+  <script type="module" >
+    import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
+    const socket = io()
+
+
+    const form = document.getElementById('form-chat')
+    const input = document.getElementById('input-message')
+    const containerMessages = document.querySelector('.chat-box')
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      // const form = e.target
+      // const { inputMessage } = Object.fromEntries(new FormData(e.target))      
+
+      if (input.value) {
+        socket.emit('chat-message', input.value)
+        input.value = ''
+      }
+    })
+
+    socket.on('chat-message', (msg) => {
+      createSentMessage(msg, containerMessages)
+      containerMessages.scrollTop = containerMessages.scrollHeight
+    });
+
+    const createSentMessage = (msg, container) => {
+      const li = document.createElement('LI')
+      const div = document.createElement('DIV')
+      const p = document.createElement('P')
+
+      li.classList.add('container-sent')
+      div.classList.add('message', 'sent')
+
+      p.textContent = msg
+      div.appendChild(p)
+      li.appendChild(div)
+      container.appendChild(li)
+    }
+
+  </script>
+</head>
+<body>
+  <div class="chat-container">
+    <ul class="chat-box">
+      <li class="message received">
+        <p>Hello!</p>
+      </li>
+      <li class="container-sent">
+        <div class="message sent">
+          <p>Hi there!</p>
+        </div>
+      </li>
+    </ul>
+    <form action="" id="form-chat">
+      <div class="input-container">
+        <input id="input-message" type="text" name="inputMessage" placeholder="Type your message...">
+        <button>Send</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
